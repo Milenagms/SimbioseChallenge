@@ -2,53 +2,35 @@ from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 
+team = [
+           {'id_team': 1,
+            'nome': 'Guaravi',
+            'atvidades': 'tests manuais e automatizados',
+            'trabalho': 1
+            },
+            {'id_team': 2,
+             'nome': 'FastCrud backend',
+             'atvidades': 'Trabalha com manutenção do site',
+             'trabalho': 2
+             },
+            {'id_team': 1,
+             'nome': 'FastCrud backend 2',
+             'atvidades': 'Trabalha com funcionalidades novas',
+             'trabalho': 2
+             },
+            {'id_team': 1,
+             'nome': 'Guaravi back',
+             'atvidades': 'tests de tabelas',
+             'trabalho': 1
+             }
+]
+
 @app.route('/teams', methods=['POST'])
 def register_teams():
     # Get data from the POST body
     request_data = request.get_json()
 
-    return_dict = {"example": "Register teams!"}
-
-    return jsonify(return_dict)
-
-
-@app.route('/employees', methods=['POST'])
-def register_employees():
-    # Get data from the POST body
-    request_data = request.get_json()
-
-    return_dict = {"example": "Register employees!"}
-
-    return jsonify(return_dict)
-
-
-@app.route('/recommendations', methods=['POST'])
-def register_recommendations():
-    # Get data from the POST body
-    request_data = request.get_json()
-
-    return_dict = {"example": "Register recommendations!"}
-
-    return jsonify(return_dict)
-
-
-@app.route('/teams', methods=['GET'])
-def get_all_teams():
-    return_dict = {"example": "'List teams!'"}
-
-    return jsonify(return_dict)
-
-
-@app.route('/recommendations', methods=['GET'])
-def get_all_recommendations():
-    return_dict = {"example": "List recommendations!"}
-
-    return jsonify(return_dict)
-
-
-@app.route('/recommendations/employees', methods=['GET'])
-def get_all_employees_with_recommendations():
-    return_dict = {"example": "List employees!"}
+    return_dict = {"example": team}
 
     return jsonify(return_dict)
 
