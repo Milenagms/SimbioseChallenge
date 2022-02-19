@@ -1,39 +1,16 @@
-from flask import Flask, jsonify, request
+from flask import Flask
+from resources.team import Teams, Team
+from resources.employee import Employee, Employees
+from flask_restful import Api
 
 app = Flask(__name__)
+api = Api(app)
 
-team = [
-           {'id_team': 1,
-            'nome': 'Guaravi',
-            'atvidades': 'tests manuais e automatizados',
-            'trabalho': 1
-            },
-            {'id_team': 2,
-             'nome': 'FastCrud backend',
-             'atvidades': 'Trabalha com manutenção do site',
-             'trabalho': 2
-             },
-            {'id_team': 1,
-             'nome': 'FastCrud backend 2',
-             'atvidades': 'Trabalha com funcionalidades novas',
-             'trabalho': 2
-             },
-            {'id_team': 1,
-             'nome': 'Guaravi back',
-             'atvidades': 'tests de tabelas',
-             'trabalho': 1
-             }
-]
+api.add_resource(Teams, '/teams')
+api.add_resource(Team, '/team')
 
-@app.route('/teams', methods=['POST'])
-def register_teams():
-    # Get data from the POST body
-    request_data = request.get_json()
-
-    return_dict = {"example": team}
-
-    return jsonify(return_dict)
-
+api.add_resource(Employees, '/employees')
+api.add_resource(Employee, '/employees/<int:register_number>')
 
 if __name__ == "__main__":
     app.run(debug=True)
