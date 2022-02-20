@@ -2,30 +2,6 @@ from flask_restful import Resource
 from flask import request, jsonify
 from sql_alchemy import project_base
 
-teams = [
-    {'id_team': 1,
-     'nome': 'Guaravi',
-     'atvidades': 'tests manuais e automatizados',
-     'trabalho': 1
-     },
-    {'id_team': 2,
-     'nome': 'FastCrud backend',
-     'atvidades': 'Trabalha com manutenção do site',
-     'trabalho': 2
-     },
-    {'id_team': 1,
-     'nome': 'FastCrud backend 2',
-     'atvidades': 'Trabalha com funcionalidades novas',
-     'trabalho': 2
-     },
-    {'id_team': 1,
-     'nome': 'Guaravi back',
-     'atvidades': 'tests de tabelas',
-     'trabalho': 1
-     }
-]
-
-
 class Teams(Resource):
     @staticmethod
     def get():
@@ -34,14 +10,18 @@ class Teams(Resource):
 
 class Team(Resource):
     def post(self, team_id):
-        team_name = request.json['team_name']
 
-        new_team = ModelTeam(team_id, team_name=team_name)
-
-        project_base.session.add(new_team)
-        project_base.session.commit()
-
-        return jsonify(request.json)
+        new = list(filter(lambda number: number.team_id == team_id, ModelTeam.query.all()))
+        print(new)
+        if not new:
+            print('entrou')
+            team_name = request.json['team_name']
+            new_team = ModelTeam(team_id, team_name=team_name)
+            project_base.session.add(new_team)
+            project_base.session.commit()
+            return jsonify(request.json)
+        else:
+            return {'message': 'team já cadastrado'}
 
     def get(self, team_id):
        pass
