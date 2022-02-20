@@ -1,6 +1,7 @@
 from flask_restful import Resource
 from flask import request, jsonify
 from sql_alchemy import project_base
+from resources.team import ModelTeam
 
 
 class ModelEmployee(project_base.Model):
@@ -8,17 +9,22 @@ class ModelEmployee(project_base.Model):
     register_number = project_base.Column(project_base.Integer, primary_key=True)
     full_name = project_base.Column(project_base.String(80))
     cpf = project_base.Column(project_base.Integer)
+    sector_id = project_base.Column(project_base.Integer, project_base.ForeignKey('teams.team_id'))
+    sector = project_base.relationship(ModelTeam)
 
-    def __init__(self, register_number, full_name, cpf):
+    def __init__(self, register_number, full_name, cpf, sector_id):
         self.register_number = register_number
         self.full_name = full_name
         self.cpf = cpf
+        self.sector_id = sector_id
 
     def formatted_data(self):
+        print(self.sector)
         return {
             "Número de registro": self.register_number,
             "Nome completo": self.full_name,
-            "CPF": self.cpf
+            "CPF": self.cpf,
+            "sector": self.sector.formatted_data()
         }
 
 
@@ -37,7 +43,7 @@ class Employee(Resource):
 
     def post(self, register_number):
         #  TODO criar uma verificação para quando já estiver criado;
-        all_value = [request.json['full_name'], request.json['cpf']]
+        all_value = [request.json['full_name'], request.json['cpf'], request.json['sector_id']]
         print(all_value)
         new_employee = ModelEmployee(register_number, *all_value)
         project_base.session.add(new_employee)
