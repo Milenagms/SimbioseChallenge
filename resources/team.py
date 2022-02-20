@@ -45,8 +45,7 @@ class Team(Resource):
         return jsonify(request.json)
 
     def get(self, team_id):
-        for team in ModelTeam.query.all():
-            print(team.team_id, team.team_name)
+        return {'teams': [{"team_id": team.team_id, "team_name": team.team_name} for team in ModelTeam.query.all()]}
 
 
 class ModelTeam(project_base.Model):
