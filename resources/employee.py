@@ -33,11 +33,13 @@ class Employees(Resource):
     def get():
         return {'Teams da Simbiose cadastrado': [employee.formatted_data() for employee in ModelEmployee.query.all()]}
 
+
 class Employee(Resource):
     def get(self, register_number):
-        for employee in employees:
-            if employee['register_number'] == register_number:
-                return employee
+
+        an_employee = ModelEmployee.query.filter_by(register_number=register_number).first()
+        if an_employee:
+            return an_employee.formatted_data()
 
         return {'message': 'Desculpa, esse funcionário não se encontra na nossa base de dados'}
 
