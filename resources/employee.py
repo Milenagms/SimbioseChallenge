@@ -31,29 +31,48 @@ class ModelEmployee(project_base.Model):
 class Employees(Resource):
     @staticmethod
     def get():
-        return {'Teams da Simbiose cadastrado': [employee.formatted_data() for employee in ModelEmployee.query.all()]}
+        value = [employee.formatted_data() for employee in ModelEmployee.query.all()]
+        if not value:
+            return {'message': 'Not found'}, 404
+        return {'All employess': value}
 
 
 class Employee(Resource):
-    def get(self, register_number):
+    @staticmethod
+    def find_employee(register_number):
+        return ModelEmployee.query.filter_by(register_number=register_number).first()
 
-        an_employee = ModelEmployee.query.filter_by(register_number=register_number).first()
+    def validate_cpf(self, cpf):
+        var = ModelEmployee.query.filter_by(cpf=cpf).first()
+        return var
+
+    def get(self, register_number):
+        an_employee = Employee.find_employee(register_number)
         if an_employee:
             return an_employee.formatted_data()
 
-        return {'message': 'Desculpa, esse funcionário não se encontra na nossa base de dados'}
+        return {'message': 'Desculpa, esse funcionário não se encontra na nossa base de dados'}, 404
 
     def post(self, register_number):
-        #  TODO criar uma verificação para quando já estiver criado;
+        an_employee = Employee.find_employee(register_number)
+        if an_employee:
+            return {"message": f"O funcionário '{register_number}' já existe"}, 400
+
         all_value = [request.json['full_name'], request.json['cpf'], request.json['sector_id']]
-        print(all_value)
+        a_database_cpf = Employee.validate_cpf(self, all_value[1])
+        if a_database_cpf:
+            return {'message': f'The cpf {a_database_cpf.cpf} already exists in our database'}, 400
+
         new_employee = ModelEmployee(register_number, *all_value)
         project_base.session.add(new_employee)
         project_base.session.commit()
         return jsonify(request.json)
 
     def delete(self, register_number):
-        # TODO pensar em um jeito de fazer isso e que funcione da proxima vez
-        global employees
-        employees = [employee for employee in employees if employee['register_number'] != register_number]
-        return{'message': 'employee deleted'}
+        an_employee = Employee.find_employee(register_number)
+        if an_employee:
+            project_base.session.delete(an_employee)
+            project_base.session.commit()
+            return {'message': 'Funcionário deletado'}
+
+        return {'message': 'Funcionário não encontrado'}, 404

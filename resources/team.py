@@ -2,6 +2,7 @@ from flask_restful import Resource
 from flask import request, jsonify
 from sql_alchemy import project_base
 
+
 class ModelTeam(project_base.Model):
     __tablename__ = 'teams'
     team_id = project_base.Column(project_base.Integer, primary_key=True)
@@ -17,10 +18,14 @@ class ModelTeam(project_base.Model):
             'Nome da equipe': self.team_name
         }
 
+
 class Teams(Resource):
     @staticmethod
     def get():
-        return {'Teams da Simbiose cadastrado': [team.formatted_data() for team in ModelTeam.query.all()]} # SELECT * FROM teams
+        value = [team.formatted_data() for team in ModelTeam.query.all()]
+        if not value:
+            return {'message': 'Not found'}, 404
+        return {'All employess': value}
 
 
 class Team(Resource):
