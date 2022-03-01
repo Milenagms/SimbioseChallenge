@@ -30,17 +30,23 @@ class Teams(Resource):
 
 class Team(Resource):
     def post(self, team_id):
+
+        # TODO modificar o nome para por exemplo teamAlreadyExists
         there_is_old = list(filter(lambda value_id: value_id.team_id == team_id, ModelTeam.query.all()))
         if there_is_old:
             return {'message': 'team já cadastrado'}, 404
 
         team_name = request.json['team_name']
+        # TODO retirar o team_name=team_name
         new_team = ModelTeam(team_id, team_name=team_name)
         project_base.session.add(new_team)
         project_base.session.commit()
+        # TODO retornar o elemento do banco e não o proprio JSON
         return jsonify(request.json)
 
     def get(self, team_id):
+        # TODO retirar o team_id=team_id
+        # TODO mudar o nome da funçao para ser mais explicita findById
         variavel = ModelTeam.query.filter_by(team_id=team_id).first()
         if variavel:
             return variavel.formatted_data()

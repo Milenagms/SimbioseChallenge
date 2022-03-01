@@ -19,7 +19,7 @@ api.add_resource(Teams, '/teams')
 api.add_resource(Team, '/teams/<int:team_id>')
 
 api.add_resource(Recommendations, '/recommendations')
-api.add_resource(Recommendation, '/recommendations/<int:recommendation_id>')
+api.add_resource(Recommendation, '/recommendations')
 
 api.add_resource(Employees, '/employees')
 api.add_resource(Employee, '/employees/<int:register_number>')

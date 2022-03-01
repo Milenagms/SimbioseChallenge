@@ -18,11 +18,12 @@ class ModelEmployee(project_base.Model):
         self.cpf = cpf
         self.sector_id = sector_id
 
+    # TODO retornar as chaves do objeto da mesma maneira que está no banco de dados
+    # TODO modificar nome para serializeJSON -> acho que faz mais sentido
     def formatted_data(self):
-        print(self.sector)
         return {
-            "Número de registro": self.register_number,
-            "Nome completo": self.full_name,
+            "id": self.register_number,
+            "full_name": self.full_name,
             "CPF": self.cpf,
             "sector": self.sector.formatted_data()
         }
@@ -34,13 +35,14 @@ class Employees(Resource):
         value = [employee.formatted_data() for employee in ModelEmployee.query.all()]
         if not value:
             return {'message': 'Not found'}, 404
-        return {'All employess': value}
+        return {'employees': value}
 
 
 class Employee(Resource):
     @staticmethod
     def find_employee(register_number):
         return ModelEmployee.query.filter_by(register_number=register_number).first()
+    # TODO tirar os first() daqui quando o banco não estiver com os dados duplicados
 
     def validate_cpf(self, cpf):
         var = ModelEmployee.query.filter_by(cpf=cpf).first()
@@ -53,12 +55,17 @@ class Employee(Resource):
 
         return {'message': 'Desculpa, esse funcionário não se encontra na nossa base de dados'}, 404
 
+    # TODO não precisa passar o register_number, o banco pode ser um autoincrement
     def post(self, register_number):
+        # TODO modificar a variavel, elas normalmente ficam genẽricas com o que está para ser buscado, ex: employee, employeeAlreadyExists
         an_employee = Employee.find_employee(register_number)
         if an_employee:
             return {"message": f"O funcionário '{register_number}' já existe"}, 400
 
+        # TODO passar o valor do cpf diretamente para a função
+        # TODO alterar o nome das variaveis all_value e a_database_cpf
         all_value = [request.json['full_name'], request.json['cpf'], request.json['sector_id']]
+        # TODO mudar o nome da funçao para findByCPF
         a_database_cpf = Employee.validate_cpf(self, all_value[1])
         if a_database_cpf:
             return {'message': f'The cpf {a_database_cpf.cpf} already exists in our database'}, 400
@@ -69,6 +76,8 @@ class Employee(Resource):
         return jsonify(request.json)
 
     def delete(self, register_number):
+        # TODO modificar a variavel, elas normalmente ficam genẽricas com o que está para ser buscado, ex: employee, employeeAlreadyExists
+        # TODO modificar o nome do metodo para findById
         an_employee = Employee.find_employee(register_number)
         if an_employee:
             project_base.session.delete(an_employee)
